@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using DotaNetUpgrade.Struct;
+using DotaBot.BL.Struct;
 
-namespace DotaNetUpgrade.Data
+namespace DotaBot.BL.Data
 {
     [Serializable]
     class SortedDatabase

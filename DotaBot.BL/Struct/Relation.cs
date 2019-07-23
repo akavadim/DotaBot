@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DotaNetUpgrade.Struct
+namespace DotaBot.BL.Struct
 {
     /// <summary>
     /// Отношения игрока с другим игроком

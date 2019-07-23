@@ -1,9 +1,9 @@
 ﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using DotaNetUpgrade.Struct;
-using DotaNetUpgrade.Data;
+using DotaBot.BL.Struct;
+using DotaBot.BL.Data;
 
-namespace DotaNetUpgrade.Data
+namespace DotaBot.BL.Data
 {
     /// <summary>
     /// Класс для бинарной сериализации данных в файл
