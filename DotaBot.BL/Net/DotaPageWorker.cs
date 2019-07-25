@@ -27,12 +27,18 @@ namespace DotaBot.BL.Net
         {
             get
             {
+                if (!IsSupported())
+                    throw new PageNotSupportedException("Страница \"" + URL + "\" не поддердживается");
+
                 string res = Regex.Match(URL, @"page=(\d+)").Value.Replace("page=", "");    //TODO: проверить работоспособность регулярного выражения
                 int number = int.Parse(res);
                 return number;
             }
             set
             {
+                if (!IsSupported())
+                    throw new PageNotSupportedException("Страница \"" + URL + "\" не поддердживается");
+
                 _pageNumber = value;
                 URL = Site + "/base/match?disciplines=21&status=past&page=" + _pageNumber;
 
@@ -49,6 +55,9 @@ namespace DotaBot.BL.Net
         {
             get
             {
+                if (!IsSupported())
+                    throw new PageNotSupportedException("Страница \"" + URL + "\" не поддердживается");
+
                 string urlNextPage = Page.DocumentNode.SelectSingleNode("//a[@class='pagination__item pagination__item--next']")?.Attributes["href"].Value;
                 if (urlNextPage == null)
                     return null;
@@ -62,6 +71,9 @@ namespace DotaBot.BL.Net
         {
             get
             {
+                if (!IsSupported())
+                    throw new PageNotSupportedException("Страница \"" + URL + "\" не поддердживается");
+
                 string urlPrevPage = Page.DocumentNode.SelectSingleNode("//a[@class='pagination__item pagination__item--prev']")?.Attributes["href"].Value;
                 if (urlPrevPage == null)
                     return null;
@@ -73,13 +85,13 @@ namespace DotaBot.BL.Net
         /// Создать класс для работы с ссылкой
         /// </summary>
         /// <param name="URL">ссылка на сайт</param>
-        public DotaPageWorker(string URL) : base(URL)
-        {
-            if (!IsExists())
-                throw new PageNotExistException("Страница \"" + URL + "\" не существует");
-            if (!IsSupported())
-                throw new PageNotSupportedException("Страница \"" + URL + "\" не поддердживается");
-        }
+        public DotaPageWorker(string URL) : base(URL) { }
+
+        /// <summary>
+        /// Создает экземпляр класса для работы с страницей cybersport.ru/base/match?disciplines=21status=pastpage=1
+        /// </summary>
+        public DotaPageWorker() : base("https://www.cybersport.ru/base/match?disciplines=21&status=past&page=1") { }
+
 
         /// <summary>
         /// Получить ссылки на матчи 
@@ -87,6 +99,9 @@ namespace DotaBot.BL.Net
         /// <returns>Ссылки на все матчи на странице</returns>
         public string[] GetMatchesURLs()
         {
+            if (!IsSupported())
+                throw new PageNotSupportedException("Страница \"" + URL + "\" не поддердживается");
+
             List<string> results = new List<string>();
             var nodes = Page.DocumentNode.SelectNodes("//div[@class='matche__score']").ToArray();
             foreach (var node in nodes)

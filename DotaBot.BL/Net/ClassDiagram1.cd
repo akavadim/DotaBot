@@ -3,7 +3,7 @@
   <Class Name="DotaBot.BL.Net.DotaMatchPageWorker">
     <Position X="0.5" Y="5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAgAAAAAAAEAACAAAAAAAAAAAAAAABA=</HashCode>
+      <HashCode>AgQAAAAAAAAAgAgQAAAAAAEAACEAAAAAAAAAQBAAABA=</HashCode>
       <FileName>Net\DotaMatchPageWorker.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -20,6 +20,13 @@
     <TypeIdentifier>
       <HashCode>AACAAAAAAAAAgQAAAAAAAAAAACAAAABAAAAAgAACAAA=</HashCode>
       <FileName>Net\DotaPageWorker.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotaBot.BL.Parsing.Parser">
+    <Position X="4.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAEAAAAAAAAAAAQAAAAAAAQAAAAAAAAAAAAgEAAAAA=</HashCode>
+      <FileName>Parsing\Parser.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

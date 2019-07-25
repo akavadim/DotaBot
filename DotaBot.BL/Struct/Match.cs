@@ -5,7 +5,7 @@ using System.Text;
 namespace DotaBot.BL.Struct
 {
     [Serializable]
-    class Match
+    public class Match
     {
         /// <summary>
         /// Левая команда

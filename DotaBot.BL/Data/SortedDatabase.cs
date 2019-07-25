@@ -6,7 +6,7 @@ using DotaBot.BL.Struct;
 namespace DotaBot.BL.Data
 {
     [Serializable]
-    class SortedDatabase
+    public class SortedDatabase
     {
         /// <summary>
         /// Все матчи в безе данных

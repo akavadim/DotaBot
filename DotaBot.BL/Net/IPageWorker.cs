@@ -2,12 +2,6 @@
 
 namespace DotaBot.BL.Net
 {
-    /// <summary>
-    /// Делегат обработчика события LoadPage
-    /// </summary>
-    /// <param name="sender">Отправитель</param>
-    /// <param name="url">Страница, с которой ведется работа</param>
-    delegate void LoadPageEventHandler(object sender, string url);
     interface IPageWorker
     {
         /// <summary>
