@@ -8,7 +8,7 @@ namespace DotaBot.BL.Struct
     /// Отношения игрока с другим игроком
     /// </summary>
     [Serializable]
-    class Relation
+    public class Relation
     {
         /// <summary>
         /// Количество побед

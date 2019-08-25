@@ -6,7 +6,7 @@ using System.Text;
 namespace DotaBot.BL.Struct
 {
     [Serializable]
-    class Gamer
+    public class Gamer
     {
         /// <summary>
         /// Ник игрока

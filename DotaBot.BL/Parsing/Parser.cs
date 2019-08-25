@@ -4,11 +4,15 @@ using System.Text;
 using DotaBot.BL.Net;
 using DotaBot.BL.Struct;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace DotaBot.BL.Parsing
 {
     class Parser
     {
+        private static Semaphore sem = new Semaphore(10, 10);
+
         /// <summary>
         /// Событие срабатвает, когда матч успешно загружен и записан
         /// </summary>
@@ -28,27 +32,64 @@ namespace DotaBot.BL.Parsing
         /// </summary>
         public event ErrorLoadPageEventHandler LoadPageError;
 
+        public Match[] UpdateMatches(Match[] notSortedMatches, CancellationToken token)
+        {
+            if (notSortedMatches == null)
+                throw new ArgumentNullException("notSortedMatches был null");
+
+            DotaPageWorker dotaPageWorker = new DotaPageWorker();
+            List<Match> matchesNew = new List<Match>(); 
+            Match LastoldMatch = notSortedMatches[0];
+            bool lastMatchloaded = false;
+
+            while (!lastMatchloaded)
+            {
+                List<Match> matches = new List<Match>();
+                if (!TryLoadPage(dotaPageWorker, "Страница с матчами не загружается, если ее не загрузить, то парсинг прервется", token))
+                    return matches.ToArray();
+
+                string[] matchURLs = dotaPageWorker.GetMatchesURLs();
+                foreach (var matchURL in matchURLs)
+                {
+                    if (matchURL == LastoldMatch.URL)
+                    {
+                        lastMatchloaded = true;
+                        break;
+                    }
+                    DotaMatchPageWorker matchPageWorker = new DotaMatchPageWorker(matchURL);
+
+                    matchPageWorker.AfterLoadPage += (sender, URL) =>
+                    {
+                        MatchPageLoaded?.Invoke(this, URL);
+                    };
+
+                    if (!TryLoadPage(matchPageWorker, "Страница с матчем не загружается", token))
+                        continue;
+
+                    matches.Add(GetMatch(matchPageWorker));
+                    MatchLoaded?.Invoke(this, matchPageWorker.URL);
+                }
+
+                PageOfMatchesLoaded?.Invoke(this, dotaPageWorker.URL);
+                
+
+                matchesNew.AddRange(matches);
+                if (dotaPageWorker.NextPage == null)
+                    break;
+
+                dotaPageWorker = new DotaPageWorker(dotaPageWorker.NextPage);
+            }
+            matchesNew.AddRange(notSortedMatches);
+            return matchesNew.ToArray();
+        }
+
         /// <summary>
         /// Метод парсит с сайта cybersport.ru все матчи Dota2
         /// </summary>
         /// <returns>Матчи</returns>
         public Match[] GetMatches()
         {
-            DotaPageWorker dotaPageWorker = new DotaPageWorker();
-            List<Match> matches = new List<Match>();
-
-            while (true)
-            {
-                matches.AddRange(GetMatches(dotaPageWorker, new CancellationToken()));
-                if (!TryLoadPage(dotaPageWorker, "Следующая страница с матчами не загружается, если ее не загрузить, то парсинг прервется", new CancellationToken()))
-                    break;
-                if (dotaPageWorker.NextPage == null)
-                    break;
-
-                dotaPageWorker = new DotaPageWorker(dotaPageWorker.NextPage);
-            }
-
-            return matches.ToArray();
+            return GetMatches(new CancellationToken());
         }
 
         /// <summary>
@@ -64,8 +105,6 @@ namespace DotaBot.BL.Parsing
             while (true)
             {
                 matches.AddRange(GetMatches(dotaPageWorker, token));
-                if (!TryLoadPage(dotaPageWorker, "Следующая страница с матчами не загружается, если ее не загрузить, то парсинг прервется", token))
-                    break;
                 if (dotaPageWorker.NextPage == null)
                     break;
 
@@ -99,10 +138,53 @@ namespace DotaBot.BL.Parsing
         /// <summary>
         /// Метод парсит с сайта cybersport.ru все матчи Dota2 многопоточно
         /// </summary>
-        public void GetMatchesMultyThread()
+        public Match[] GetMatchesMultyThread()
         {
-            throw new System.NotImplementedException();
-        }   //TODO: Доделать сногопоточное получение матчей
+            return GetMatchesMultyThread(new CancellationToken());
+        }   //TODO: оделать многопоточное получение матчей
+
+        /// <summary>
+        /// Метод парсит с сайта cybersport.ru все матчи многопоточно с возможностью отмены
+        /// </summary>
+        /// <param name="token">Токен отмены</param>
+        public Match[] GetMatchesMultyThread(CancellationToken token)
+        {
+            DotaPageWorker dotaPageWorker = new DotaPageWorker();
+            List<Match> matches = new List<Match>();
+            List<Task<Match[]>> tasks = new List<Task<Match[]>>();
+
+            while (true)
+            {
+                if (token.IsCancellationRequested)
+                    throw new System.OperationCanceledException("Операция отменена", token);
+
+                tasks.Add(Task.Run(()=>GetMatches(dotaPageWorker, token)));
+                while (dotaPageWorker.Page == null)
+                    Thread.Sleep(100);
+                if (dotaPageWorker.NextPage == null)
+                    break;
+
+                dotaPageWorker = new DotaPageWorker(dotaPageWorker.NextPage);
+            }
+
+            while((from task in tasks
+                  where task.Status==TaskStatus.RanToCompletion
+                  select task).Count() == tasks.Count)
+            {
+                if (token.IsCancellationRequested)
+                    throw new System.OperationCanceledException("Операция отменена", token);
+                foreach (var t in tasks)
+                    if (t.IsFaulted)
+                        throw t.Exception.InnerException;
+
+                Thread.Sleep(100);
+            }
+
+            foreach (var t in tasks)
+                matches.AddRange(t.Result);
+
+            return matches.ToArray();
+        }
 
         /// <summary>
         /// Получение матчей по определенной страницу заданной dotaPageWorker
@@ -149,17 +231,30 @@ namespace DotaBot.BL.Parsing
         /// <returns>True - загружена, False - нет</returns>
         private bool TryLoadPage(IPageWorker pageWorker, string message, CancellationToken token)
         {
-            if (token.IsCancellationRequested)
-                throw new OperationCanceledException("Операция отменена", token);
-            while (!pageWorker.IsSupported())
+            do
             {
                 if (token.IsCancellationRequested)
                     throw new OperationCanceledException("Операция отменена", token);
 
-                bool? res = LoadPageError?.Invoke(this, new PageInfoArgs(message, pageWorker.URL));
-                if (res == null||res==false)
-                    return false;
-            }
+                if (pageWorker.Page == null)
+                    try
+                    {
+                        sem.WaitOne();
+                        pageWorker.LoadPage();
+                        break; }
+                    catch (Exception ex)
+                    {
+                        bool? res = LoadPageError?.Invoke(this, 
+                            new PageInfoArgs(message + "\nОшибка: " + ex.Message + "\nСайт: "+pageWorker.URL, pageWorker.URL));
+                        if (res == null || res == false)
+                            return false;
+                    }
+                    finally { sem.Release(); }
+                else break;
+            } while (true);
+
+            if (!pageWorker.IsSupported())
+                return false;
             return true;
         }
 

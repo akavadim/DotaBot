@@ -1,0 +1,43 @@
+﻿<Window x:Class="DotaBot.WindowStatusParse"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DotaBot"
+        mc:Ignorable="d"
+        Title="Парсинг..." Height="200" Width="270" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" ResizeMode="NoResize" WindowStyle="ToolWindow" HorizontalAlignment="Center" VerticalAlignment="Center">
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="44.8"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <Label HorizontalContentAlignment="Right" HorizontalAlignment="Right" >
+                <TextBlock TextAlignment="Right"><Run Text="Количество загруженных "/><LineBreak/><Run Text="и обработанных страниц с матчами:"/></TextBlock>
+            </Label>
+            <Label HorizontalContentAlignment="Right">
+                <TextBlock TextAlignment="Right"><Run Text="Количество загруженных"/><LineBreak/><Run Text="и обработанных матчей:"/></TextBlock>
+            </Label>
+            <Label HorizontalContentAlignment="Right">
+                <TextBlock TextAlignment="Right"><Run Text="Всего загружено и"/><LineBreak/><Run Text="обработано страниц"/><Run Text=":"/></TextBlock>
+            </Label>
+        </StackPanel>
+        <StackPanel Grid.Column="1">
+            <Label x:Name="LabelPagesOfMatchesLoaded" Content="Статус" Height="41.6" VerticalContentAlignment="Center"/>
+            <Label x:Name="LabelMatchesLoaded" Content="Статус" Height="41.6" VerticalContentAlignment="Center"/>
+            <Label x:Name="LabelTotalLoaded" Content="Статус" Height="41.6" VerticalContentAlignment="Center"/>
+        </StackPanel>
+        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="166*"/>
+                <ColumnDefinition Width="91*"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="ButtonCancel" Content="Отмена" VerticalAlignment="Center" Padding="3" IsCancel="True" Margin="5" Click="ButtonCancel_Click"/>
+            <Button x:Name="ButtonReady" Content="Готово!" Padding="3" IsDefault="True" VerticalAlignment="Center" Grid.Column="1" Margin="5" Click="ButtonReady_Click" IsEnabled="False"/>
+        </Grid>
+    </Grid>
+</Window>

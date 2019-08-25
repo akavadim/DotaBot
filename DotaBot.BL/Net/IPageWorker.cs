@@ -23,6 +23,10 @@ namespace DotaBot.BL.Net
         event LoadPageEventHandler AfterLoadPage;
 
         /// <summary>
+        /// Загружает страницу
+        /// </summary>
+        void LoadPage();
+        /// <summary>
         /// Проверяет, возможно ли загрузить страницу
         /// </summary>
         /// <returns>True - возможно, False - не возможно</returns>

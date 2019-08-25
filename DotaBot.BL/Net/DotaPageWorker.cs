@@ -58,7 +58,7 @@ namespace DotaBot.BL.Net
                 if (!IsSupported())
                     throw new PageNotSupportedException("Страница \"" + URL + "\" не поддердживается");
 
-                string urlNextPage = Page.DocumentNode.SelectSingleNode("//a[@class='pagination__item pagination__item--next']")?.Attributes["href"].Value;
+                string urlNextPage = Page.DocumentNode.SelectSingleNode("//a[@class='pagination__item pagination__item--next']")?.Attributes["href"].DeEntitizeValue;
                 if (urlNextPage == null)
                     return null;
                 return Site + urlNextPage;
@@ -115,10 +115,13 @@ namespace DotaBot.BL.Net
         /// <returns>True - поддерживает, False - не поддерживает</returns>
         public override bool IsSupported()
         {
+            if (Page == null)
+                throw new NullReferenceException("Страница не загружена");
+
             bool supported = false;
             bool workedURL = Regex.IsMatch(URL, @"page=(\d+)") && URL.Contains("disciplines=21") && URL.Contains("status=past");
-            bool neededComponents = (Page.DocumentNode.SelectNodes("//a[@class='matches__list list-unstyled']") != null)
-                && (Page.DocumentNode.SelectNodes("//a[@class='matches__item']") != null);
+            bool neededComponents = (Page.DocumentNode.SelectNodes("//ul[@class='matches__list list-unstyled']") != null)
+                && (Page.DocumentNode.SelectNodes("//li[@class='matches__item']") != null);
 
             if (base.IsSupported() && workedURL && neededComponents)
                 supported = true;

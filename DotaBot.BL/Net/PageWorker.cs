@@ -24,16 +24,11 @@ namespace DotaBot.BL.Net
             set { _page = null; _url = value; }
         }
         /// <summary>
-        /// Текущая страница 
+        /// Текущая страница, если оона была загружена с помощью LoadPage
         /// </summary>
         public HtmlDocument Page
         {
-            get
-            {
-                if (_page == null)
-                    _page = LoadPage();
-                return _page;
-            }
+            get => _page;
         }
 
         /// <summary>
@@ -55,7 +50,7 @@ namespace DotaBot.BL.Net
         /// Загружает страницу
         /// </summary>
         /// <param name="url">Ссылка на страницу</param>
-        protected virtual HtmlDocument LoadPage()
+        public virtual void LoadPage()
         {
             string url = URL;
 
@@ -87,7 +82,7 @@ namespace DotaBot.BL.Net
 
             AfterLoadPage?.Invoke(this, url);
 
-            return htmlDocument;
+            _page=htmlDocument;
         }
 
         /// <summary>
@@ -96,6 +91,9 @@ namespace DotaBot.BL.Net
         /// <returns>True - возможно, False - не возможно</returns>
         public virtual bool IsExists()
         {
+            if (_page != null)
+                return true;
+
             WebRequest webRequest = HttpWebRequest.Create(URL);
             webRequest.Method = "HEAD";
             try

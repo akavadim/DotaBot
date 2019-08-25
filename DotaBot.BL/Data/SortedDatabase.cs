@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using DotaBot.BL.Struct;
+using System.Linq;
 
 namespace DotaBot.BL.Data
 {
@@ -52,7 +53,7 @@ namespace DotaBot.BL.Data
         /// <param name="teamName">Название команды</param>
         /// <param name="gamers">Игроки</param>
         /// <returns>Команда из базы данных</returns>
-        public Team CreateTeamByNewGamers(string teamName ,Gamer[] gamers)
+        private Team CreateTeamByNewGamers(string teamName ,Gamer[] gamers)
         {
             for (int i = 0; i < gamers.Length; i++)
             {
@@ -63,6 +64,76 @@ namespace DotaBot.BL.Data
             }
             Team team = new Team(teamName, gamers);
             return team;
+        }
+
+        public (double Left, double Right) GetResultMatch(string[] lefts, string[] rights)
+        {
+            if (lefts == null || rights == null)
+                throw new ArgumentNullException("Один из аргументов был пустой");
+            List<Gamer> left = new List<Gamer>();
+            List<Gamer> right = new List<Gamer>();
+
+            foreach (var gamerName in lefts)
+            {
+                var gamer = GetGamerByURL(gamerName);
+                if (gamer == null)
+                    throw new Exception("Игрок " + gamerName + " не найден в базе");
+                left.Add(gamer);
+            }
+
+            foreach (var gamerName in rights)
+            {
+                var gamer = GetGamerByURL(gamerName);
+                if (gamer == null)
+                    throw new Exception("Игрок " + gamerName + " не найден в базе");
+                right.Add(gamer);
+            }
+
+            return GetResultMatch(left.ToArray(), right.ToArray());
+        }
+
+        public (double Left, double Right)GetResultMatch(Gamer[] leftGamers, Gamer[] rightGamers)
+        {
+            foreach (var gamer in leftGamers.Concat(rightGamers))
+                if (!Gamers.Contains(gamer))
+                    throw new ArgumentException("Игроки должны содеражаться в базе данных");
+
+            double scoresLeft = 0;
+            double scoresRight = 0;
+
+            foreach (Gamer gamer in leftGamers)
+            {
+                scoresLeft += gamer.Winrate;
+                foreach (Gamer body in leftGamers)
+                    if (body != gamer)
+                        scoresLeft += gamer.FindBodi(body).Winrate;
+                foreach (Gamer enemy in rightGamers)
+                    scoresLeft += gamer.FindEnemy(enemy).Winrate;
+            }
+            foreach (Gamer gamer in rightGamers)
+            {
+                scoresRight += gamer.Winrate;
+                foreach (Gamer body in rightGamers)
+                    if (body != gamer)
+                        scoresRight += gamer.FindBodi(body).Winrate;
+                foreach (Gamer enemy in leftGamers)
+                    scoresRight += gamer.FindEnemy(enemy).Winrate;
+            }
+
+            return (scoresLeft, scoresRight);
+        }
+
+        /// <summary>
+        /// Возвращает игрока, если оон содердится в базе данных
+        /// </summary>
+        /// <param name="URL">Ссылка на игрока</param>
+        /// <returns>Игрок или null</returns>
+        private Gamer GetGamerByURL(string name)
+        {
+            foreach (var gamer in Gamers)
+                if (gamer.URL == name)
+                    return gamer;
+            return null;
         }
     }
 }

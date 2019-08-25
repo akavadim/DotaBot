@@ -5,7 +5,7 @@ using System.Text;
 namespace DotaBot.BL.Struct
 {
     [Serializable]
-    class Team
+    public class Team
     {
         /// <summary>
         /// Название команды

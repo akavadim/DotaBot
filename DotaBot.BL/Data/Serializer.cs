@@ -1,7 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using DotaBot.BL.Struct;
-using DotaBot.BL.Data;
 
 namespace DotaBot.BL.Data
 {
@@ -51,11 +51,29 @@ namespace DotaBot.BL.Data
         /// Десериализзует объект по пути Path
         /// </summary>
         /// <returns>Массив Матчей</returns>
-        public Match[] DeserializeMatches() => (Match[])Deserialize();
+        public Match[] DeserializeMatches()
+        {
+            object obj = Deserialize();
+            if (!(obj is Match[]))
+                throw new InvalidCastException("Файл не поддерживается");
+
+            return (Match[])Deserialize();
+        }
         /// <summary>
         /// Дессериализует объект по пусти Path
         /// </summary>
         /// <returns>Сортированная база данных</returns>
-        public SortedDatabase DeserializeSortedDatabase() => (SortedDatabase)Deserialize();
+        public SortedDatabase DeserializeSortedDatabase()
+        {
+            object obj = Deserialize();
+            if (!(obj is SortedDatabase))
+                throw new InvalidCastException("Файл не поддерживается");
+
+            return (SortedDatabase)Deserialize();
+        }
+        /// <summary>
+        /// Проверяет существует ли файл
+        /// </summary>
+        /// <returns></returns>
     }
 }

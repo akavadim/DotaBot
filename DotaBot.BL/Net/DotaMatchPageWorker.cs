@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System.Linq;
 using DotaBot.BL.Struct;
+using System;
 
 namespace DotaBot.BL.Net
 {
@@ -53,7 +54,7 @@ namespace DotaBot.BL.Net
         /// Получение названий команд
         /// </summary>
         /// <returns>Названия левой и правой команд</returns>
-        public (string Left, string Right) TeamsNames() //TODO: доделать получение названий команд
+        public (string Left, string Right) TeamsNames()
         {
             if (IsInternational())
                 return TeamsNamesForInternational();
@@ -61,6 +62,43 @@ namespace DotaBot.BL.Net
             string left = nodeNames[0].InnerText;
             string right = nodeNames[1].InnerText;
             return (left, right);
+        }
+
+        /// <summary>
+        /// Проверяет, поддерживает ли этот класс работу с URL
+        /// </summary>
+        /// <returns>True - поддерживает, False - не поддерживает</returns>
+        public override bool IsSupported()
+        {
+            if (Page == null)
+                throw new NullReferenceException("Страаница не загружена");
+
+            bool supported = false;
+            bool workedURL = URL.Contains("cybersport.ru") && URL.Contains("/base/match/group/");
+            bool neededComponentsForInternational = (Page.DocumentNode.SelectSingleNode("//ul[@class='list-unstyled list-team-status']") != null) &&
+                (Page.DocumentNode.SelectSingleNode("//header[@class='d-flex align-items-center']") != null)
+                && (Page.DocumentNode.SelectNodes("//li[@class='d-flex alig-items-center team']")?.Count > 9);
+            bool neededComponents = (Page.DocumentNode.SelectNodes("//h2[@class='duel__title']")?.Count > 1)
+                && (Page.DocumentNode.SelectNodes("//li[a[@target='_blank']]")?.Count > 9);
+
+            if (base.IsSupported() && workedURL && (neededComponents || neededComponentsForInternational))
+                supported = true;
+
+            return supported;
+        }
+
+        /// <summary>
+        /// Проверяет является ли эта страница страницей с интернешионалом
+        /// </summary>
+        /// <returns>True - Является, False - не является</returns>
+        public bool IsInternational()
+        {
+            if (!IsSupported())
+                throw new PageNotSupportedException("Страница не поддерживается");
+            bool neededComponentsForInternational = (Page.DocumentNode.SelectSingleNode("//ul[@class='list-unstyled list-team-status']") != null) &&
+               (Page.DocumentNode.SelectSingleNode("//header[@class='d-flex align-items-center']") != null)
+               && (Page.DocumentNode.SelectNodes("//li[@class='d-flex alig-items-center team']")?.Count > 9);
+            return neededComponentsForInternational;
         }
 
         /// <summary>
@@ -138,40 +176,6 @@ namespace DotaBot.BL.Net
             }
 
             return gamers;
-        }
-
-        /// <summary>
-        /// Проверяет, поддерживает ли этот класс работу с URL
-        /// </summary>
-        /// <returns>True - поддерживает, False - не поддерживает</returns>
-        public override bool IsSupported()
-        {
-            bool supported = false;
-            bool workedURL = URL.Contains("cybersport.ru") && URL.Contains("/base/match/group/");
-            bool neededComponentsForInternational = (Page.DocumentNode.SelectSingleNode("//ul[@class='list-unstyled list-team-status']") != null) &&
-                (Page.DocumentNode.SelectSingleNode("//header[@class='d-flex align-items-center']") != null)
-                && (Page.DocumentNode.SelectNodes("//li[@class='d-flex alig-items-center team']")?.Count > 9);
-            bool neededComponents = (Page.DocumentNode.SelectNodes("//h2[@class='duel__title']").Count > 1)
-                && (Page.DocumentNode.SelectNodes("li").Count > 9);
-
-            if (base.IsSupported() && workedURL && (neededComponents || neededComponentsForInternational))
-                supported = true;
-
-            return supported;
-        }
-
-        /// <summary>
-        /// Проверяет является ли эта страница страницей с интернешионалом
-        /// </summary>
-        /// <returns>True - Является, False - не является</returns>
-        public bool IsInternational()
-        {
-            if (!IsSupported())
-                throw new PageNotSupportedException("Страница не поддерживается");
-            bool neededComponentsForInternational = (Page.DocumentNode.SelectSingleNode("//ul[@class='list-unstyled list-team-status']") != null) &&
-               (Page.DocumentNode.SelectSingleNode("//header[@class='d-flex align-items-center']") != null)
-               && (Page.DocumentNode.SelectNodes("//li[@class='d-flex alig-items-center team']")?.Count > 9);
-            return neededComponentsForInternational;
         }
     }
 }

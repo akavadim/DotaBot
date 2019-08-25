@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{246DAD91-B990-4700-8DFE-BC1AF879B176}</ProjectGuid>
+    <ProjectGuid>{7E5F6FEF-5A59-4F71-9214-1229777373DB}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>DotaBot.BL</RootNamespace>
-    <AssemblyName>DotaBot.BL</AssemblyName>
+    <RootNamespace>DotaBot.PS</RootNamespace>
+    <AssemblyName>DotaBot.PS</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -37,37 +37,19 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Data\ClassDiagram1.cd" />
-    <None Include="Net\ClassDiagram1.cd" />
-    <None Include="packages.config" />
-    <None Include="Struct\StructDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\Serializer.cs" />
-    <Compile Include="Data\SortedDatabase.cs" />
-    <Compile Include="Delegates.cs" />
-    <Compile Include="IModels\IModel.cs" />
-    <Compile Include="Model.cs" />
-    <Compile Include="Net\DotaMatchPageWorker.cs" />
-    <Compile Include="Net\DotaPageWorker.cs" />
-    <Compile Include="Net\Exceptions.cs" />
-    <Compile Include="Net\IPageWorker.cs" />
-    <Compile Include="Net\PageWorker.cs" />
-    <Compile Include="Parsing\Parser.cs" />
-    <Compile Include="Struct\Gamer.cs" />
-    <Compile Include="Struct\Match.cs" />
-    <Compile Include="Struct\Relation.cs" />
-    <Compile Include="Struct\Team.cs" />
+    <Compile Include="IViews\Delegations.cs" />
+    <Compile Include="IViews\IMainWindow.cs" />
+    <Compile Include="IViews\IMessageService.cs" />
+    <Compile Include="IViews\IStatusParse.cs" />
+    <Compile Include="Presenter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="HtmlAgilityPack, Version=1.11.12.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>..\packages\HtmlAgilityPack.1.11.12\lib\Net45\HtmlAgilityPack.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
+    <ProjectReference Include="..\DotaBot.BL\DotaBot.BL.csproj">
+      <Project>{246dad91-b990-4700-8dfe-bc1af879b176}</Project>
+      <Name>DotaBot.BL</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

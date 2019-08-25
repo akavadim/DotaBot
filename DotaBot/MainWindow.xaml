@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DotaBot"
         mc:Ignorable="d"
-        Title="DotaBot" MinWidth="415.2" MinHeight="442" Height="454.8" Width="443.2">
+        Title="DotaBot" MinWidth="575" MinHeight="440" Height="440" Width="575">
     <Window.Resources>
         <Style x:Key="ButtonMarkup">
             <Setter Property="Control.Margin" Value="5" />
@@ -27,14 +27,14 @@
             <Label Content="База данных:" Padding="5,5,0,5" Grid.IsSharedSizeScope="True"/>
             <Label x:Name="LabelDatabaseStatus" Content="Статус" Padding="0,5,5,5"/>
             <Label Content="Несортиванные данные:" Padding="5,5,0,5"/>
-            <Label x:Name="LabelNotSortedData" Content="Статус" Padding="0,5,5,5"/>
+            <Label x:Name="LabelNotSortedDataStatus" Content="Статус" Padding="0,5,5,5"/>
         </StatusBar>
         <GroupBox Header="Парсер">
             <StackPanel>
-                <Button x:Name="ButtonParsePage" Content="Парсить одну страницу" Style="{StaticResource ButtonMarkup}"/>
-                <Button x:Name="ButtonParse" Content="Парсить в одном потоке" Style="{StaticResource ButtonMarkup}"/>
-                <Button IsEnabled="False"  Grid.IsSharedSizeScope="True" Style="{StaticResource ButtonMarkup}">
-                    <TextBlock x:Name="ButtonParseMultyThread" TextAlignment="Center">Парсить многопоточно<LineBreak/>(В разработке)</TextBlock>
+                <Button x:Name="ButtonParsePage" Content="Парсить одну страницу" Style="{StaticResource ButtonMarkup}" Click="ButtonParsePage_Click"/>
+                <Button x:Name="ButtonParse" Content="Парсить в одном потоке" Style="{StaticResource ButtonMarkup}" Click="ButtonParse_Click"/>
+                <Button x:Name="ButtonParseMultyThread1"  Grid.IsSharedSizeScope="True" Style="{StaticResource ButtonMarkup}" Click="ButtonParseMultyThread_Click">
+                    <TextBlock TextAlignment="Center">Парсить многопоточно</TextBlock>
                 </Button>
             </StackPanel>
         </GroupBox>
@@ -48,12 +48,17 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Label Content="Несортированные данные:" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
                 <Label Content="База данных:" HorizontalContentAlignment="Right" Grid.Row="1" VerticalContentAlignment="Center"/>
-                <Button x:Name="ButtonLoadNotSortedData" Content="Выбрать..." Grid.Column="2" Style="{StaticResource ButtonMarkup}"/>
-                <Button x:Name="ButtonLoadDatabase" Content="Выбрать..." Grid.Row="1" Grid.Column="2" Style="{StaticResource ButtonMarkup}"/>
-                <Button x:Name="ButtonAnalizData" Grid.ColumnSpan="2" Content="Анализ несортированных данных" Style="{StaticResource ButtonMarkup}" Grid.Row="2" Width="224"/>
+                <Button x:Name="ButtonLoadNotSortedData" Content="Выбрать..." Grid.Column="1" Style="{StaticResource ButtonMarkup}" Click="ButtonLoadNotSortedData_Click"/>
+                <Button x:Name="ButtonLoadDatabase" Content="Выбрать..." Grid.Row="1" Grid.Column="1" Style="{StaticResource ButtonMarkup}" Click="ButtonLoadDatabase_Click"/>
+                <Button x:Name="ButtonAnalizData" Grid.ColumnSpan="3" Content="Анализ несортированных данных" Style="{StaticResource ButtonMarkup}" Grid.Row="2" Click="ButtonAnalizData_Click"/>
+                <Button x:Name="ButtonSaveNotSorteedData" Grid.Column="2" Content="Сохранить" Style="{StaticResource ButtonMarkup}" Click="ButtonSaveNotSorteedData_Click"/>
+                <Button x:Name="ButtonSaveDatabase" Grid.Column="2" Grid.Row="1" Content="Сохранить" Style="{StaticResource ButtonMarkup}" Click="ButtonSaveDatabase_Click"/>
+                <Button x:Name="ButtonUpdateNotSortedData" Content="Обновить" Grid.Column="3" Style="{StaticResource ButtonMarkup}" Click="ButtonUpdateNotSortedData_Click"/>
             </Grid>
         </GroupBox>
         <GroupBox Grid.ColumnSpan="3" Header="Рассчетать результаты матча" Grid.Row="1">
@@ -82,7 +87,7 @@
                     <TextBox x:Name="TextBoxUrlRightPlayer4" Height="23" Margin="5" VerticalContentAlignment="Center"/>
                     <TextBox x:Name="TextBoxUrlRightPlayer5" Height="23" Margin="5" VerticalContentAlignment="Center"/>
                 </StackPanel>
-                <Button x:Name="ButtonResultMatch" Content="Рассчитать результаты матча" Grid.Row="1" Style="{StaticResource ButtonMarkup}" Grid.ColumnSpan="2"/>
+                <Button x:Name="ButtonResultMatch" Content="Рассчитать результаты матча" Grid.Row="1" Style="{StaticResource ButtonMarkup}" Grid.ColumnSpan="2" Click="ButtonResultMatch_Click"/>
             </Grid>
         </GroupBox>
     </Grid>

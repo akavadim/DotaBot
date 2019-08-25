@@ -72,6 +72,7 @@ namespace DotaBot.BL
         public string URL { get; set; }
         public string Message { get; set; }
 
+
         public PageInfoArgs(string message, string URL)
         {
             Message = message;
